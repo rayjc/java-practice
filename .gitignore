@@ -4,6 +4,5 @@
 **/.project
 **/.settings
 **/*.class
-lib
 .DS_Store
 **/.idea
