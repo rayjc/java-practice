@@ -1,0 +1,37 @@
+package producerconsumer;
+
+import java.util.List;
+
+public class Consumer implements Runnable {
+    List<Integer> questions = null;
+
+    public Consumer(List<Integer> questions) {
+        this.questions = questions;
+    }
+
+    public void answerQuestion() throws InterruptedException {
+        synchronized (questions) {
+            while(questions.isEmpty()) {
+                System.out.println("No questions..., waiting for producer to generate questions.");
+                questions.wait();
+            }
+        }
+
+        synchronized (questions) {
+            Thread.sleep(3000);
+            System.out.println("Answered Question: " + questions.remove(0));
+            questions.notify();
+        }
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                answerQuestion();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}

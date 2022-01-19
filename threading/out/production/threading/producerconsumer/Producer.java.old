@@ -1,0 +1,43 @@
+package producerconsumer;
+
+import java.util.List;
+
+public class Producer implements Runnable {
+
+    List<Integer> questions = null;
+    final int LIMIT = 5;
+    private int questionNo;
+
+    public Producer(List<Integer> questions) {
+        this.questions = questions;
+    }
+
+    public void readQuestion(int questionNo) throws InterruptedException {
+        // synchronize on data or shared queue instead of method
+
+        synchronized (questions) {
+            while(questions.size() == LIMIT) {
+                System.out.println("Too many questions..., please wait for answers.");
+                questions.wait();
+            }
+        }
+
+        synchronized (questions) {
+            System.out.println("New Question: " + questionNo);
+            questions.add(questionNo);
+            Thread.sleep(100);
+            questions.notify();
+        }
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                readQuestion(questionNo++);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
